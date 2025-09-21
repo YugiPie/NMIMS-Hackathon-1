@@ -113,20 +113,22 @@ const FileUploader = ({ onUploadStart, onUploadComplete, onUploadError, uploadin
   const sendToN8n = async (userId, csvData) => {
     try {
       // Get n8n webhook URL from environment or use a default
-      const n8nWebhookUrl = import.meta.env.VITE_N8N_WEBHOOK_URL || 'https://your-n8n-instance.com/webhook/your-webhook-id';
+      const n8nWebhookUrl = import.meta.env.VITE_N8N_WEBHOOK_URL;
       
-      if (n8nWebhookUrl === 'https://your-n8n-instance.com/webhook/your-webhook-id') {
-        console.log('n8n webhook URL not configured, skipping n8n integration');
+      if (!n8nWebhookUrl) {
+        console.log('n8n webhook URL not configured in environment variables');
         return;
       }
 
       const payload = {
         userId: userId,
         csvData: csvData,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        fileName: selectedFile.name
       };
 
       console.log('Sending to n8n webhook:', n8nWebhookUrl);
+      console.log('Payload:', { userId, fileName: selectedFile.name, csvDataLength: csvData.length });
       
       const response = await fetch(n8nWebhookUrl, {
         method: 'POST',
@@ -137,7 +139,8 @@ const FileUploader = ({ onUploadStart, onUploadComplete, onUploadError, uploadin
       });
 
       if (!response.ok) {
-        throw new Error(`n8n webhook failed: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(`n8n webhook failed: ${response.status} - ${errorText}`);
       }
 
       const result = await response.json();
@@ -146,6 +149,7 @@ const FileUploader = ({ onUploadStart, onUploadComplete, onUploadError, uploadin
     } catch (error) {
       console.error('n8n webhook error:', error);
       // Don't throw error here - let the upload complete even if n8n fails
+      // But we could show a warning to the user
     }
   };
 
