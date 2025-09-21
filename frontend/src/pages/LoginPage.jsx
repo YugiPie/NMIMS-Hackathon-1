@@ -13,7 +13,11 @@ const LoginPage = () => {
       setError('');
       await signInWithGoogle();
     } catch (error) {
-      setError('Failed to sign in. Please try again.');
+      if (error.code === 'auth/popup-blocked') {
+        setError('Popup was blocked by your browser. Please allow popups for this site and try again. You can usually do this by clicking the popup blocker icon in your address bar.');
+      } else {
+        setError('Failed to sign in. Please try again.');
+      }
       console.error('Sign in error:', error);
     } finally {
       setLoading(false);
