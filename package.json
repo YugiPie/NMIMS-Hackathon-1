@@ -1,0 +1,17 @@
+{
+  "name": "stock-analysis-hackathon",
+  "version": "1.0.0",
+  "description": "Full-stack serverless application for real-time stock portfolio analysis",
+  "main": "index.js",
+  "scripts": {
+    "dev": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "install-frontend": "cd frontend && npm install",
+    "install-functions": "cd functions && npm install",
+    "install-all": "npm run install-frontend && npm run install-functions",
+    "deploy-functions": "cd functions && firebase deploy --only functions"
+  },
+  "keywords": ["react", "firebase", "serverless", "stock-analysis", "hackathon"],
+  "author": "",
+  "license": "MIT"
+}
